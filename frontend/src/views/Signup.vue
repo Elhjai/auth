@@ -89,6 +89,9 @@
 <script>
 import axios from 'axios';
 
+// API Configuration
+const API_URL = 'https://auth-production-3fd3.up.railway.app';
+
 export default {
   data() {
     return {
@@ -103,20 +106,19 @@ export default {
     async handleSignup() {
       this.isLoading = true;
       this.error = null;
-
       try {
-        const response = await axios.post('http://localhost:3000/api/auth/signup', {
+        const response = await axios.post(`${API_URL}/api/auth/signup`, {
           username: this.username,
           email: this.email,
           password: this.password,
         });
-
         // Store token and username
         localStorage.setItem('userToken', response.data.token);
         localStorage.setItem('username', response.data.username);
         this.$router.push('/converter');
       } catch (error) {
         this.error = error.response?.data?.message || 'Signup failed';
+        console.error('Signup error:', error);
       } finally {
         this.isLoading = false;
       }
