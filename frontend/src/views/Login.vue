@@ -73,6 +73,9 @@
 <script>
 import axios from 'axios';
 
+// API Configuration
+const API_URL = import.meta.env.VITE_API_URL || 'https://auth-production-3fd3.up.railway.app';
+
 export default {
   data() {
     return {
@@ -86,19 +89,18 @@ export default {
     async handleLogin() {
       this.isLoading = true;
       this.error = null;
-
       try {
-        const response = await axios.post('http://localhost:3000/api/auth/login', {
+        const response = await axios.post(`${API_URL}/api/auth/login`, {
           email: this.email,
           password: this.password,
         });
-
         // Store token and username
         localStorage.setItem('userToken', response.data.token);
         localStorage.setItem('username', response.data.username);
         this.$router.push('/converter');
       } catch (error) {
         this.error = error.response?.data?.message || 'Login failed';
+        console.error('Login error:', error);
       } finally {
         this.isLoading = false;
       }
