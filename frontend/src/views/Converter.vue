@@ -199,6 +199,9 @@
 <script>
 import axios from 'axios';
 
+// API Configuration
+const API_URL = 'https://auth-production-3fd3.up.railway.app';
+
 export default {
   data() {
     return {
@@ -248,9 +251,8 @@ export default {
       this.isLoading = true;
       this.error = null;
       this.result = null;
-
       try {
-        const response = await axios.get('http://localhost:3000/api/converter/convert', {
+        const response = await axios.get(`${API_URL}/api/converter/convert`, {
           params: {
             from: this.fromCurrency,
             to: this.toCurrency,
@@ -260,7 +262,6 @@ export default {
             Authorization: `Bearer ${localStorage.getItem('userToken')}`,
           },
         });
-
         this.result = response.data.result;
         if (this.result) {
           const conversion = {
@@ -276,6 +277,7 @@ export default {
         }
       } catch (err) {
         this.error = err.response?.data?.message || 'Conversion failed';
+        console.error('Conversion error:', err);
       } finally {
         this.isLoading = false;
       }
@@ -286,7 +288,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.get('http://localhost:3000/api/converter/convert', {
+        const response = await axios.get(`${API_URL}/api/converter/convert`, {
           params: {
             from: this.quickFromCurrency,
             to: this.quickToCurrency,
