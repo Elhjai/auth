@@ -1,13 +1,6 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-console.log('Database connection details:');
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_NAME:', process.env.DB_NAME);
-console.log('DB_PORT:', process.env.DB_PORT);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? '***SET***' : 'NOT SET');
-
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -21,12 +14,6 @@ const sequelize = new Sequelize(
         require: true,
         rejectUnauthorized: false
       }
-    },
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
     }
   }
 );
