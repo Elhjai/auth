@@ -18,6 +18,14 @@
           {{ error }}
         </div>
       </transition>
+      <transition name="fade">
+        <div
+          v-if="success"
+          class="bg-green-900/50 text-green-300 p-4 rounded-lg mb-6 text-center border border-green-500/30"
+        >
+          {{ success }}
+        </div>
+      </transition>
       <form @submit.prevent="handleLogin" class="space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-300">
@@ -57,6 +65,9 @@
           <span v-else>Login</span>
         </button>
       </form>
+      <div class="mt-4 space-y-2">
+       
+      </div>
       <p class="mt-6 text-center text-gray-400 text-sm">
         Don't have an account?
         <router-link
@@ -71,11 +82,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-// API Configuration
-const API_URL = import.meta.env.VITE_API_URL || 'https://auth-production-3fd3.up.railway.app';
-
 export default {
   data() {
     return {
@@ -83,27 +89,56 @@ export default {
       password: '',
       isLoading: false,
       error: null,
+      success: null,
     };
   },
   methods: {
     async handleLogin() {
       this.isLoading = true;
       this.error = null;
-      try {
-        const response = await axios.post(`${API_URL}/api/auth/login`, {
-          email: this.email,
-          password: this.password,
-        });
-        // Store token and username
-        localStorage.setItem('userToken', response.data.token);
-        localStorage.setItem('username', response.data.username);
+      this.success = null;
+
+      // Simulate login process without server dependency
+      setTimeout(() => {
+        try {
+          // Mock successful login - accept any email/password
+          if (this.email && this.password) {
+            // Store mock token and username
+            const mockToken = 'mock-jwt-token-' + Date.now();
+            const username = this.email.split('@')[0]; // Use email prefix as username
+            
+            localStorage.setItem('userToken', mockToken);
+            localStorage.setItem('username', username);
+            
+            this.success = 'Login successful! Redirecting...';
+            
+            // Redirect after showing success message
+            setTimeout(() => {
+              this.$router.push('/converter');
+            }, 1000);
+          } else {
+            this.error = 'Please fill in all fields';
+          }
+        } catch (error) {
+          this.error = 'Login failed';
+        } finally {
+          this.isLoading = false;
+        }
+      }, 1000); // Simulate network delay
+    },
+    bypassLogin() {
+      // Allow immediate access without any credentials
+      const mockToken = 'bypass-token-' + Date.now();
+      const username = 'guest-user';
+      
+      localStorage.setItem('userToken', mockToken);
+      localStorage.setItem('username', username);
+      
+      this.success = 'Access granted! Redirecting...';
+      
+      setTimeout(() => {
         this.$router.push('/converter');
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Login failed';
-        console.error('Login error:', error);
-      } finally {
-        this.isLoading = false;
-      }
+      }, 500);
     },
   },
 };
