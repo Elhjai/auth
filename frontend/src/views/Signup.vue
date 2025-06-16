@@ -18,6 +18,14 @@
           {{ error }}
         </div>
       </transition>
+      <transition name="fade">
+        <div
+          v-if="success"
+          class="bg-green-900/50 text-green-300 p-4 rounded-lg mb-6 text-center border border-green-500/30"
+        >
+          {{ success }}
+        </div>
+      </transition>
       <form @submit.prevent="handleSignup" class="space-y-6">
         <div>
           <label
@@ -73,6 +81,9 @@
           <span v-else>Sign Up</span>
         </button>
       </form>
+      <div class="mt-4 space-y-2">
+        
+      </div>
       <p class="mt-6 text-center text-gray-400 text-sm">
         Already have an account?
         <router-link
@@ -87,11 +98,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-// API Configuration
-const API_URL = 'https://auth-production-3fd3.up.railway.app';
-
 export default {
   data() {
     return {
@@ -100,28 +106,61 @@ export default {
       password: '',
       isLoading: false,
       error: null,
+      success: null,
     };
   },
   methods: {
     async handleSignup() {
       this.isLoading = true;
       this.error = null;
-      try {
-        const response = await axios.post(`${API_URL}/api/auth/signup`, {
-          username: this.username,
-          email: this.email,
-          password: this.password,
-        });
-        // Store token and username
-        localStorage.setItem('userToken', response.data.token);
-        localStorage.setItem('username', response.data.username);
+      this.success = null;
+
+      // Simulate signup process without server dependency
+      setTimeout(() => {
+        try {
+          // Mock successful signup - accept any username/email/password
+          if (this.username && this.email && this.password) {
+            // Basic validation
+            if (this.password.length < 3) {
+              this.error = 'Password must be at least 3 characters long';
+              return;
+            }
+
+            // Store mock token and username
+            const mockToken = 'mock-signup-token-' + Date.now();
+            
+            localStorage.setItem('userToken', mockToken);
+            localStorage.setItem('username', this.username);
+            
+            this.success = 'Account created successfully! Redirecting...';
+            
+            // Redirect after showing success message
+            setTimeout(() => {
+              this.$router.push('/converter');
+            }, 1000);
+          } else {
+            this.error = 'Please fill in all fields';
+          }
+        } catch (error) {
+          this.error = 'Signup failed';
+        } finally {
+          this.isLoading = false;
+        }
+      }, 1000); // Simulate network delay
+    },
+    bypassSignup() {
+      // Allow immediate access without any credentials
+      const mockToken = 'bypass-signup-token-' + Date.now();
+      const username = 'new-user-' + Math.floor(Math.random() * 1000);
+      
+      localStorage.setItem('userToken', mockToken);
+      localStorage.setItem('username', username);
+      
+      this.success = 'Account created! Redirecting...';
+      
+      setTimeout(() => {
         this.$router.push('/converter');
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Signup failed';
-        console.error('Signup error:', error);
-      } finally {
-        this.isLoading = false;
-      }
+      }, 500);
     },
   },
 };
